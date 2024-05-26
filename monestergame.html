@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="scripts.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id ='game'>
+        <div id ='status'>
+            <span class="stat">xp:<strong><span id="xptext">0</span></strong></span>
+            <span class="stat">health:<strong><span id="healthtext">100</span></strong></span>
+            <span class="stat">Gold:<strong><span id="goldtext">50</span></strong></span>
+        </div>
+
+        <div id="controls">
+            <button id="button1" >Go to store</button>
+            <button id="button2">go to cave</button>
+            <button id="button3">fight dragon</button>
+        </div>
+        <div id="monesterstats">
+            <span class="stat">monester name:<strong><span id="monestername"></span></strong>
+            <span class="stat">health:<strong><span id="monestrhealth"></span></strong>
+        </span>
+            
+</div>
+        <div ><P id="text">wellcome to dragone repeller. you must defet the gragon that is 
+            preventing people from leaving the town square.whre do you to go ?use the button above.
+            </P>
+        </div>
+    </div>
+    <script>
+        
+let xp=0;
+let health=100;
+let gold=50;
+let currentWeapon=0;
+let fighting;
+let monesterhealth;
+let invetory=['stick'];
+const buttton1=document.querySelector('#button1');
+const buttton2=document.querySelector('#button2');
+const buttton3=document.querySelector('#button3');
+const text=document.querySelector('#text');
+const xptext=document.querySelector('#xptext');
+const healthText=document.querySelector('#healthtext');
+const  goldText=document.querySelector('#goldtext');
+const monesterstats=document.querySelector('#monesterstats');
+const monesternametext=document.querySelector('#monestername');
+const monesterhealthtext=document.querySelector('#monestrhealth');
+    const locations =[
+          {
+            name:"town squre",
+            'button text':['go to store','go to cave','fight dragon'],
+            "button function":[goStore,gocave,fightdragone],
+            text:"you are in the town squre. you see a sing that say \"store.\""
+          },
+          {
+            name:"store",
+            "button text":["buy 10 health (10 gold)","buy weapon (30 gold)","go to town square"],
+            "button function":[buyHealth,buyWeapon,gotown],
+            text:" you anter the store"
+          },
+          {
+            name:'cave',
+            "button text":["fight slime","fight fanged beast","go to square"],
+            "button function":[fightslim,fightBeast,gotown],
+            text:"you enter the cave. you see some monester"
+          },
+          
+          
+          {
+            name:"fight",
+            "button text":["attack","dodge","RUN"],
+            "button function":[attack,dodge,gotown],
+            text:"you are fighting a monester."
+          },
+          {
+            name:"killmonester",
+            "button text":["go to town squre","go to town squre","go to town squre"],
+            "button function":[gotown,gotown,gotown],
+            text:"the monester screams \"arg !\" as it die. you again experience points and find gold."
+          },{
+          name:"lose",
+          "button text":["replay","replay","replay"],
+          "button function":[restart,restart,restart],
+          text:"you die."
+
+          },{
+          name:"win",
+          "button text":["replay","replay","replay"],
+          "button function":[restart,restart,restart],
+          text:"you defeat the dragone! you win the game!"
+
+          }
+        ]
+            
+   //innitialize button 
+   buttton1.onclick=goStore;
+   buttton2.onclick=gocave;
+   buttton3.onclick=fightdragone;
+   //
+   const weapons=[{
+          name:"stick",
+          power:5
+
+   },{
+    name:"dagger",
+    power:30
+   },
+   {
+    name:"sword",
+    power:100
+   }
+
+   ];
+   const monesters=[{
+         name:"slime",
+         level:2,
+         health:15
+                 },
+                 {
+                    name:"fanged beast",
+                    level:8,
+                    health:60
+                 },
+                 {
+                    name:"dragon",
+                    level:20,
+                    health:300,
+
+                 }
+                ];
+   function update(location) {
+    
+    monesterstats.style.display=null;
+    buttton1.innerHTML=location['button text'][0];
+    buttton2.innerHTML=location['button text'][1];
+    buttton3.innerHTML=location['button text'][2];
+    buttton1.onclick=location['button function'][0];
+    buttton2.onclick=location['button function'][1];
+    buttton3.onclick=location['button function'][2];
+    text.innerText=location.text;
+           
+    
+   }
+   function gotown(params) {
+           update(locations[0])
+    
+    
+   }
+   function goStore(params) {
+    update(locations[1]);
+    
+    
+   }
+
+   function gocave(params) {
+    update(locations[2]);
+    
+   } 
+
+
+function buyHealth(params) {
+    if (gold>=10) {
+        gold-=10
+        health+=10
+        goldText.innerText=gold
+        healthText.innerText=health  
+    }else
+    text.innerText="you do not have enough gold to buy health.";
+
+    
+}
+function buyWeapon(params) {
+    if(currentWeapon<weapons.length-1){
+    if (gold>=30) {
+        gold-=30;
+        currentWeapon++;
+        goldText.innerText=gold;
+        let newWeapon=weapons[currentWeapon].name;
+        text.innerText="you now have a"+newWeapon+".";
+        invetory.push(newWeapon);
+        text.innerText+="in your inventory you have:"+invetory;
+        
+    }
+    else{
+        text.innerText="you do not have enough gold to buy a weapon.";
+    }
+}else{
+    text.innerText="you already have the most powerfull  weapon!";
+    buttton2.innerText="sell weapon for gold";
+    buttton2.onclick=sellWeapon;
+    
+
+}
+}
+function sellWeapon(params) {
+    if (invetory.length>1) {
+        gold+=15;
+        goldText.innerText=gold;
+        let currentWeapon=invetory.shift();
+        text.innerText="you sold a"+currentWeapon+".";
+        text.innerText+="in your inventory you have:"+invetory;
+
+        
+    }
+    else{
+        text.innerText="don't sell your only weapon!";
+    }
+    
+}
+ function fightslim() {
+    fighting=0;
+    goFight();
+    
+ }
+ function fightBeast(){
+    fighting=1;
+    goFight();
+    
+ }
+ function fightdragone() {
+    fighting=2;
+    goFight();
+    
+}
+function goFight(params) {
+       update(locations[3])
+    monesterhealth=monesters[fighting].health;
+    monesterstats.style.display="block";
+    monesternametext.innerText=monesters[fighting].name;
+     //monesternametext.innerText=monesters[fighting].name;  
+     monesterhealthtext.innerText=monesterhealth;
+    
+}
+function attack() {
+       text.innerText="text "+ monesters[fighting].name+" .";
+       text.innerText+="you athack with your "+weapons[currentWeapon].name+" ";
+       health-=monesters[fighting].level;
+       monesterhealth-=weapons[currentWeapon].power+Math.floor(Math.random()*xp)+1;
+       healthText.innerText=health;
+       monesterhealthtext.innerText=monesterhealth;
+       if (health<=0) {
+        lose();
+        
+       }
+       else if (monesterhealth<=0) {
+          fighting===2 ? wingame():defeatMonestr();
+        
+       }
+
+}
+function dodge() {
+    text.innerText="you dodge the attack from the "+monesters[fighting].name+".";
+    
+}
+
+   function defeatMonestr(params) {
+    gold+=Math.floor(monesters[fighting].level*6.7);
+    xp+=monesters[fighting].level;
+    goldText.innerText=gold;
+    xptext.innerText=xp;
+    update(locations[4]);
+   }
+    function lose(params) {
+        update(locations[5]);
+        
+    }
+    function wingame(params) {
+        update(locations[6])
+        
+    }
+
+   function restart(params) {
+    xp=0;
+    health=100;
+    gold=50;
+    currentWeapon=0;
+    invetory=["stick"];
+    goldText.innerText=gold;
+    healthText.innerText=gold;
+    xptext.innerText=xp;
+    gotown();
+    
+   }
+    </script>
+</body>
+</html>
